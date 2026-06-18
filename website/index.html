@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduCenter Pro — نظام إدارة المراكز التعليمية</title>
+  <meta name="description" content="نظام متكامل لإدارة المراكز التعليمية — حضور، امتحانات، مدفوعات، تقارير" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: #0b1120;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0b1120; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+
+    .bg-grid {
+      background-image:
+        linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(79, 70, 229, 0.08) 0%, transparent 60%);
+      animation: pulseGlow 8s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 720px; }
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 18px;
+      border-radius: 999px;
+      background: rgba(79, 70, 229, 0.15);
+      border: 1px solid rgba(79, 70, 229, 0.3);
+      color: #818cf8;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #e2e8f0, #818cf8, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.15rem;
+      color: #94a3b8;
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Cairo', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+    }
+    .btn-secondary {
+      background: rgba(30, 41, 59, 0.8);
+      color: #e2e8f0;
+      border: 1px solid #334155;
+    }
+    .btn-secondary:hover {
+      background: rgba(30, 41, 59, 1);
+      border-color: #4f46e5;
+      transform: translateY(-2px);
+    }
+    .btn-small {
+      padding: 10px 20px;
+      font-size: 13px;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 48px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat .num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #818cf8;
+    }
+    .hero-stat .label {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    /* Sections */
+    section { padding: 80px 2rem; max-width: 1100px; margin: 0 auto; }
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .section-sub {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 48px;
+      font-size: 15px;
+    }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 28px 24px;
+      transition: all 0.3s ease;
+    }
+    .feature-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+    .feature-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    /* Screenshots */
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .screenshot-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .screenshot-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-4px);
+    }
+    .screenshot-placeholder {
+      height: 200px;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .screenshot-card .caption {
+      padding: 16px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Download */
+    .download-section {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(79, 70, 229, 0.02));
+      border: 1px solid rgba(79, 70, 229, 0.15);
+      border-radius: 24px;
+      padding: 60px 40px;
+      text-align: center;
+    }
+    .download-section h2 { font-size: 1.8rem; margin-bottom: 12px; }
+    .download-section .sub { color: #94a3b8; margin-bottom: 32px; }
+    .download-info {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .download-info span { display: flex; align-items: center; gap: 6px; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 2rem;
+      border-top: 1px solid #1e293b;
+      color: #475569;
+      font-size: 13px;
+    }
+    footer a { color: #818cf8; text-decoration: none; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      section { padding: 48px 1rem; }
+      .hero h1 { font-size: 2rem; }
+      .btn { padding: 12px 24px; font-size: 14px; }
+      .hero-stats { gap: 24px; }
+      .hero-stat .num { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">🚀 الإصدار 1.0 — جاهز للتثبيت</div>
+        <h1>إديوسنتر برو<br />EduCenter Pro</h1>
+        <p>
+          النظام المتكامل لإدارة المراكز التعليمية. تتبع حضور الطلاب، إدارة الامتحانات
+          والدرجات، المدفوعات، التقارير المتقدمة، والمدرسين — كل ذلك في تطبيق سطح مكتب
+          واحد يعمل بدون إنترنت.
+        </p>
+        <div class="hero-buttons">
+          <a href="#download" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            تحميل البرنامج
+          </a>
+          <a href="#features" class="btn btn-secondary">استعراض المميزات</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">30+</div><div class="label">ميزة متكاملة</div></div>
+          <div class="hero-stat"><div class="num">20</div><div class="label">جدول بيانات</div></div>
+          <div class="hero-stat"><div class="num">100%</div><div class="label">دون إنترنت</div></div>
+          <div class="hero-stat"><div class="num">عربي</div><div class="label">واجهة كاملة</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features">
+      <h2 class="section-title">⭐ مميزات قوية</h2>
+      <p class="section-sub">كل ما تحتاجه لإدارة مركزك التعليمي في تطبيق واحد</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <h3>إدارة الطلاب</h3>
+          <p>إضافة، تعديل، حذف، بحث، فلترة — مع باركود لكل طالب وبطاقة تعريفية قابلة للطباعة.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">✅</div>
+          <h3>الحضور والغياب</h3>
+          <p>تسجيل الحضور بالباركود أو البحث السريع. إنشاء امتحانات تلقائياً لكل حصة.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📝</div>
+          <h3>الامتحانات والدرجات</h3>
+          <p>إنشاء امتحانات، إدخال درجات، عرض ترتيب الطلاب مع شارات ذهبية وفضية وبرونزية.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <h3>المدفوعات والأقساط</h3>
+          <p>تسجيل المدفوعات، نظام أقساط (3/4/6 دفعات)، إيصالات دفع مطبوعة مع QR.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>التقارير والتحليلات</h3>
+          <p>تقارير الغائبين، المتبقين، غير المسددين، المتميزين — مع تصدير Excel, PDF, CSV.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👨‍🏫</div>
+          <h3>المدرسون والموظفون</h3>
+          <p>إدارة المدرسين، حضورهم، تقييماتهم. صلاحيات للموظفين (مشرف / عامل).</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>الرسائل وواتساب</h3>
+          <p>قوالب رسائل للواتساب، إشعارات غياب ودفع، فتح مباشر في واتساب ويب.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>تخصيص كامل</h3>
+          <p>تغيير الألوان، إضافة شعار المركز، تعديل اسم المركز — كل شيء قابل للتخصيص.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h3>نسخ احتياطي</h3>
+          <p>نسخ احتياطي واستعادة كاملين للبيانات. نسخ محلي وسحابي (Google Drive).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section id="screenshots">
+      <h2 class="section-title">🖥️ صور من البرنامج</h2>
+      <p class="section-sub">واجهة عربية أنيقة مع الوضع الليلي</p>
+      <div class="screenshots-grid">
+        <div class="screenshot-card">
+          <div class="screenshot-placeholder">📊</div>
+          <div class="caption">لوحة التحكم — إحصائيات ورسوم بيانية</div>
+        </div>
+        <div class="screenshot-card">
+          <div class="screenshot-placeholder">👥</div>
+          <div class="caption">إدارة الطلاب — جدول وبحث وفلترة</div>
+        </div>
+        <div class="screenshot-card">
+          <div class="screenshot-placeholder">✅</div>
+          <div class="caption">شاشة الحضور — باركود وبحث سريع</div>
+        </div>
+        <div class="screenshot-card">
+          <div class="screenshot-placeholder">📝</div>
+          <div class="caption">الامتحانات — درجات وترتيب الطلاب</div>
+        </div>
+        <div class="screenshot-card">
+          <div class="screenshot-placeholder">💰</div>
+          <div class="caption">المدفوعات والأقساط والإيصالات</div>
+        </div>
+        <div class="screenshot-card">
+          <div class="screenshot-placeholder">📈</div>
+          <div class="caption">تقارير احترافية — PDF و Excel</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download -->
+    <section id="download">
+      <div class="download-section">
+        <h2>📥 تحميل EduCenter Pro</h2>
+        <p class="sub">الإصدار 1.0 — وندوز (64 بت)</p>
+        <div class="hero-buttons">
+          <a href="../release/EduCenter%20Pro%20Setup%201.0.0.exe" class="btn btn-primary btn-small" download>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            تحميل مباشر (115 MB)
+          </a>
+          <a href="https://github.com/YoussefMohamed-Joo/EduCenter-Pro/releases" target="_blank" class="btn btn-secondary btn-small">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub Releases
+          </a>
+        </div>
+        <div class="download-info">
+          <span>🪟 وندوز 10 / 11</span>
+          <span>📦 115 MB</span>
+          <span>🌐 بدون إنترنت بعد التثبيت</span>
+          <span>🔒 آمن وخالٍ من البرامج الضارة</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- How to install -->
+    <section>
+      <h2 class="section-title">🔧 طريقة التثبيت</h2>
+      <p class="section-sub">3 خطوات فقط وتبدأ العمل</p>
+      <div class="features-grid">
+        <div class="feature-card" style="text-align:center">
+          <div style="font-size:36px;margin-bottom:12px">1</div>
+          <h3>تحميل الملف</h3>
+          <p>اضغط على زر التحميل أعلاه لتنزيل ملف التثبيت <code>EduCenter Pro Setup 1.0.0.exe</code></p>
+        </div>
+        <div class="feature-card" style="text-align:center">
+          <div style="font-size:36px;margin-bottom:12px">2</div>
+          <h3>تشغيل المثبت</h3>
+          <p>افتح الملف المضغوط وشغّل المثبت. اتبع التعليمات — التثبيت يستغرق دقيقة واحدة.</p>
+        </div>
+        <div class="feature-card" style="text-align:center">
+          <div style="font-size:36px;margin-bottom:12px">3</div>
+          <h3>ابدأ الاستخدام</h3>
+          <p>سجل الدخول بإسم المستخدم <code>admin</code> وكلمة المرور <code>admin123</code> وابدأ!</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>EduCenter Pro © 2026 — جميع الحقوق محفوظة</p>
+      <p style="margin-top:6px">
+        <a href="https://github.com/YoussefMohamed-Joo" target="_blank">GitHub</a>
+        &nbsp;·&nbsp;
+        <a href="https://vercel.com/youssefmohamed-joos-projects" target="_blank">Vercel</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

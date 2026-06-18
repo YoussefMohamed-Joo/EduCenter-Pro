@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-electron/
+release/
+*.exe
+*.7z
+*.blockmap
+.env
+.DS_Store
