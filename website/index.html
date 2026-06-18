@@ -12,222 +12,212 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
 </head>
 <body>
-  <!-- Navbar -->
+
+  <!-- ===== NAVBAR ===== -->
   <nav class="navbar" id="navbar">
-    <div class="nav-inner">
-      <div class="nav-logo">
-        <div class="nav-logo-icon">E</div>
-        <span>EduCenter <span class="text-primary">Pro</span></span>
+    <div class="container nav-flex">
+      <a href="#" class="logo">
+        <span class="logo-mark">E</span>
+        EduCenter <span class="fw300">Pro</span>
+      </a>
+      <div class="nav-menu" id="navMenu">
+        <a href="#features" class="nav-link">المميزات</a>
+        <a href="#showcase" class="nav-link">معرض الصور</a>
+        <a href="#download" class="nav-link">تحميل</a>
+        <a href="#contact" class="nav-link">اتصل بنا</a>
+        <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">🌙</button>
       </div>
-      <div class="nav-links">
-        <a href="#features">المميزات</a>
-        <a href="#screenshots">صور</a>
-        <a href="#download">تحميل</a>
-        <a href="#contact">اتصل بنا</a>
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">🌙</button>
-      </div>
-      <button class="mobile-menu-btn" onclick="toggleMobile()" aria-label="Menu">☰</button>
-    </div>
-    <div class="mobile-menu" id="mobileMenu">
-      <a href="#features" onclick="toggleMobile()">المميزات</a>
-      <a href="#screenshots" onclick="toggleMobile()">صور</a>
-      <a href="#download" onclick="toggleMobile()">تحميل</a>
-      <a href="#contact" onclick="toggleMobile()">اتصل بنا</a>
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="hero" id="home">
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="hero">
     <div class="hero-bg">
-      <div class="hero-gradient"></div>
-      <div class="hero-particles" id="particles"></div>
-    </div>
-    <div class="hero-content">
-      <div class="hero-badge">🎓 الإصدار 1.0 — جاهز للتثبيت</div>
-      <h1>
-        نظام إدارة <br/>
-        <span class="gradient-text">المراكز التعليمية</span>
-      </h1>
-      <p class="hero-desc">
-        منصة متكاملة لإدارة الطلاب، الحضور، الامتحانات، المدفوعات، المدرسين، والتقارير — 
-        كل ذلك في تطبيق سطح مكتب واحد يعمل بدون إنترنت.
-      </p>
-      <div class="hero-actions">
-        <a href="#download" class="btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          تحميل مجاني
-        </a>
-        <a href="#features" class="btn-outline">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          شاهد المميزات
-        </a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><span class="stat-num" data-target="30">0</span><span class="stat-label">ميزة متكاملة</span></div>
-        <div class="hero-stat"><span class="stat-num" data-target="15">0</span><span class="stat-label">جدول بيانات</span></div>
-        <div class="hero-stat"><span class="stat-num" data-target="100">0</span><span class="stat-label">% دون إنترنت</span></div>
-        <div class="hero-stat"><span class="stat-num" data-target="99">0</span><span class="stat-label">% رضا العملاء</span></div>
+      <div class="hero-glow"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
       </div>
     </div>
-    <div class="hero-mockup-container">
-      <div class="mockup">
-        <div class="mockup-screen">
-          <div class="mockup-header">
-            <div class="mockup-dots"><span></span><span></span><span></span></div>
-            <div class="mockup-title">EduCenter Pro</div>
-          </div>
-          <div class="mockup-body">
-            <div class="mock-sidebar"></div>
-            <div class="mock-main">
-              <div class="mock-cards">
-                <div></div><div></div><div></div><div></div>
-              </div>
-              <div class="mock-chart">
-                <div></div><div></div><div></div><div></div><div></div>
+    <div class="container hero-flex">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          الإصدار 1.0 — جاهز للتثبيت
+        </div>
+        <h1 class="hero-title">
+          نظام إدارة <br/>
+          <span class="gradient-text">المراكز التعليمية</span>
+        </h1>
+        <p class="hero-sub">
+          منصة متكاملة لإدارة الطلاب، الحضور، الامتحانات، المدفوعات، المدرسين، والتقارير —
+          كل ذلك في تطبيق سطح مكتب واحد يعمل <strong>بدون إنترنت</strong>.
+        </p>
+        <div class="hero-actions">
+          <a href="#download" class="btn btn-primary">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            تحميل مجاني
+          </a>
+          <a href="#features" class="btn btn-outline">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            اكتشف المميزات
+          </a>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric"><span class="metric-num" data-count="30">0</span><span class="metric-label">ميزة متكاملة</span></div>
+          <div class="metric"><span class="metric-num" data-count="20">0</span><span class="metric-label">جدول بيانات</span></div>
+          <div class="metric"><span class="metric-num" data-count="100">0</span><span class="metric-label">% دون إنترنت</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="mockup-wrap">
+          <div class="mockup">
+            <div class="mockup-top">
+              <div class="mockup-dots"><span></span><span></span><span></span></div>
+              <span class="mockup-top-title">EduCenter Pro</span>
+            </div>
+            <div class="mockup-body">
+              <div class="mockup-sidebar"></div>
+              <div class="mockup-main">
+                <div class="mockup-row"><div></div><div></div><div></div><div></div></div>
+                <div class="mockup-chart">
+                  <div></div><div></div><div></div><div></div><div></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <div class="hero-shine"></div>
       </div>
     </div>
   </section>
 
-  <!-- Features -->
+  <!-- ===== FEATURES ===== -->
   <section class="section" id="features">
     <div class="container">
-      <div class="section-head">
-        <span class="section-badge">المميزات</span>
-        <h2>كل ما تحتاجه لإدارة مركزك</h2>
-        <p>أكثر من 30 ميزة متكاملة في تطبيق واحد سهل الاستخدام</p>
+      <div class="sec-head">
+        <span class="sec-tag">المميزات</span>
+        <h2 class="sec-title">كل ما تحتاجه <span class="gradient-text">في تطبيق واحد</span></h2>
+        <p class="sec-sub">أكثر من 30 ميزة احترافية مصممة خصيصاً للمراكز التعليمية</p>
       </div>
-      <div class="features-grid">
-        <div class="feature-card" data-delay="0">
-          <div class="feature-icon" style="--fc:#6366f1">📋</div>
-          <h3>إدارة الطلاب</h3>
-          <p>إضافة، تعديل، حذف، بحث سريع، فلترة متقدمة — مع باركود لكل طالب وبطاقة تعريفية قابلة للطباعة.</p>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon" style="--c:#6366f1"><span>📋</span></div>
+          <h4>إدارة الطلاب</h4>
+          <p>إضافة، تعديل، حذف، بحث فوري، فلترة متقدمة — باركود لكل طالب وبطاقة تعريفية قابلة للطباعة.</p>
         </div>
-        <div class="feature-card" data-delay="50">
-          <div class="feature-icon" style="--fc:#22c55e">✅</div>
-          <h3>الحضور والغياب</h3>
-          <p>تسجيل الحضور بالباركود أو البحث السريع. إنشاء امتحانات تلقائياً لكل حصة. إحصائيات فورية.</p>
+        <div class="feat-card">
+          <div class="feat-icon" style="--c:#22c55e"><span>✅</span></div>
+          <h4>الحضور والغياب</h4>
+          <p>تسجيل الحضور بالباركود أو البحث السريع. إنشاء امتحانات تلقائياً لكل حصة مع إحصائيات فورية.</p>
         </div>
-        <div class="feature-card" data-delay="100">
-          <div class="feature-icon" style="--fc:#f59e0b">📝</div>
-          <h3>الامتحانات والدرجات</h3>
+        <div class="feat-card">
+          <div class="feat-icon" style="--c:#f59e0b"><span>📝</span></div>
+          <h4>الامتحانات والدرجات</h4>
           <p>إنشاء امتحانات، إدخال درجات، ترتيب الطلاب مع شارات ذهبية وفضية وبرونزية للمتفوقين.</p>
         </div>
-        <div class="feature-card" data-delay="150">
-          <div class="feature-icon" style="--fc:#ec4899">💰</div>
-          <h3>المدفوعات والأقساط</h3>
+        <div class="feat-card">
+          <div class="feat-icon" style="--c:#ec4899"><span>💰</span></div>
+          <h4>المدفوعات والأقساط</h4>
           <p>تسجيل المدفوعات، نظام أقساط (3/4/6 دفعات)، إيصالات دفع مطبوعة مع QR كود.</p>
         </div>
-        <div class="feature-card" data-delay="200">
-          <div class="feature-icon" style="--fc:#8b5cf6">📊</div>
-          <h3>التقارير والتحليلات</h3>
-          <p>تقارير الغائبين، الحصص المتبقية، غير المسددين، المتميزين — مع تصدير Excel, PDF, CSV.</p>
+        <div class="feat-card">
+          <div class="feat-icon" style="--c:#8b5cf6"><span>📊</span></div>
+          <h4>التقارير والتحليلات</h4>
+          <p>تقارير الغائبين، الحصص المتبقية، غير المسددين، المتميزين — تصدير Excel, PDF, CSV.</p>
         </div>
-        <div class="feature-card" data-delay="250">
-          <div class="feature-icon" style="--fc:#06b6d4">👨‍🏫</div>
-          <h3>المدرسون والموظفون</h3>
-          <p>إدارة المدرسين، حضورهم، تقييماتهم. صلاحيات متعددة للموظفين (مدير / مشرف / عامل).</p>
+        <div class="feat-card">
+          <div class="feat-icon" style="--c:#06b6d4"><span>👨‍🏫</span></div>
+          <h4>المدرسون والموظفون</h4>
+          <p>إدارة المدرسين، حضورهم، تقييماتهم. صلاحيات متعددة (مدير / مشرف / عامل).</p>
         </div>
-        <div class="feature-card" data-delay="300">
-          <div class="feature-icon" style="--fc:#10b981">📱</div>
-          <h3>الرسائل وواتساب</h3>
-          <p>قوالب رسائل احترافية للواتساب، إشعارات الغياب والدفع، فتح مباشر في واتساب ويب.</p>
+        <div class="feat-card">
+          <div class="feat-icon" style="--c:#10b981"><span>📱</span></div>
+          <h4>الرسائل وواتساب</h4>
+          <p>قوالب رسائل احترافية للواتساب، إشعارات غياب ودفع، فتح مباشر في واتساب ويب.</p>
         </div>
-        <div class="feature-card" data-delay="350">
-          <div class="feature-icon" style="--fc:#f97316">🎨</div>
-          <h3>تخصيص كامل</h3>
-          <p>تغيير الألوان الأساسية، إضافة شعار المركز، تعديل اسم المركز — كل شيء قابل للتخصيص.</p>
+        <div class="feat-card">
+          <div class="feat-icon" style="--c:#f97316"><span>🎨</span></div>
+          <h4>تخصيص كامل</h4>
+          <p>تغيير الألوان الأساسية، إضافة شعار المركز، تعديل الاسم — كل شيء قابل للتخصيص.</p>
         </div>
-        <div class="feature-card" data-delay="400">
-          <div class="feature-icon" style="--fc:#3b82f6">🔄</div>
-          <h3>نسخ احتياطي</h3>
+        <div class="feat-card">
+          <div class="feat-icon" style="--c:#3b82f6"><span>🔄</span></div>
+          <h4>نسخ احتياطي</h4>
           <p>نسخ احتياطي واستعادة كاملين للبيانات. نسخ محلي أو سحابي (Google Drive / OneDrive).</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Stats -->
-  <section class="stats-section">
+  <!-- ===== STATS ===== -->
+  <section class="stats-band">
     <div class="container">
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value"><span data-target="50">0</span>+</div>
+        <div class="stat-item">
+          <div class="stat-val"><span data-count="50">0</span>+</div>
           <div class="stat-desc">طالب في الثانية</div>
-          <div class="stat-label">سرعة معالجة</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value"><span data-target="20">0</span></div>
-          <div class="stat-desc">جدول بيانات</div>
-          <div class="stat-label">قاعدة البيانات</div>
+        <div class="stat-item">
+          <div class="stat-val"><span data-count="20">0</span></div>
+          <div class="stat-desc">جدول في قاعدة البيانات</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value"><span data-target="100">0</span>%</div>
-          <div class="stat-desc">دون إنترنت</div>
-          <div class="stat-label">تشغيل كامل</div>
+        <div class="stat-item">
+          <div class="stat-val"><span data-count="100">0</span>%</div>
+          <div class="stat-desc">تشغيل دون إنترنت</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value"><span data-target="24">0</span>/7</div>
-          <div class="stat-desc">دعم فني</div>
-          <div class="stat-label">متاح دائماً</div>
+        <div class="stat-item">
+          <div class="stat-val"><span data-count="24">0</span>/7</div>
+          <div class="stat-desc">دعم فني متاح</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Screenshots -->
-  <section class="section" id="screenshots">
+  <!-- ===== SHOWCASE ===== -->
+  <section class="section" id="showcase">
     <div class="container">
-      <div class="section-head">
-        <span class="section-badge">صور</span>
-        <h2>واجهة احترافية وعربية</h2>
-        <p>صممت بعناية لتناسب احتياجات المراكز التعليمية</p>
+      <div class="sec-head">
+        <span class="sec-tag">معرض الصور</span>
+        <h2 class="sec-title">واجهة <span class="gradient-text">احترافية وعربية</span></h2>
+        <p class="sec-sub">صممت بعناية لتناسب احتياجات المراكز التعليمية في العالم العربي</p>
       </div>
       <div class="showcase-grid">
-        <div class="showcase-item">
-          <div class="showcase-img">
-            <div class="showcase-placeholder" style="background:linear-gradient(135deg,#1e293b,#0f172a)">
-              <div style="text-align:center;color:#94a3b8">
-                <div style="font-size:48px;margin-bottom:12px">📊</div>
-                <div style="font-size:14px;font-weight:600;color:#e2e8f0">لوحة التحكم</div>
-                <div style="font-size:11px;margin-top:4px">إحصائيات ورسوم بيانية</div>
-              </div>
+        <div class="show-item">
+          <div class="show-img" style="background:linear-gradient(135deg,#1e293b,#0f172a)">
+            <div class="show-placeholder">
+              <span class="show-emoji">📊</span>
+              <span class="show-label">لوحة التحكم</span>
             </div>
           </div>
-          <div class="showcase-caption">
+          <div class="show-info">
             <h4>لوحة التحكم</h4>
             <p>إحصائيات فورية مع رسوم بيانية تفاعلية وأفضل الطلاب</p>
           </div>
         </div>
-        <div class="showcase-item">
-          <div class="showcase-img">
-            <div class="showcase-placeholder" style="background:linear-gradient(135deg,#1e293b,#0f172a)">
-              <div style="text-align:center;color:#94a3b8">
-                <div style="font-size:48px;margin-bottom:12px">👥</div>
-                <div style="font-size:14px;font-weight:600;color:#e2e8f0">إدارة الطلاب</div>
-                <div style="font-size:11px;margin-top:4px">جدول وبحث وفلترة</div>
-              </div>
+        <div class="show-item">
+          <div class="show-img" style="background:linear-gradient(135deg,#1e293b,#0f172a)">
+            <div class="show-placeholder">
+              <span class="show-emoji">👥</span>
+              <span class="show-label">إدارة الطلاب</span>
             </div>
           </div>
-          <div class="showcase-caption">
+          <div class="show-info">
             <h4>إدارة الطلاب</h4>
             <p>جدول متكامل مع بحث فوري وفلترة متقدمة وبطاقات تعريفية</p>
           </div>
         </div>
-        <div class="showcase-item">
-          <div class="showcase-img">
-            <div class="showcase-placeholder" style="background:linear-gradient(135deg,#1e293b,#0f172a)">
-              <div style="text-align:center;color:#94a3b8">
-                <div style="font-size:48px;margin-bottom:12px">✅</div>
-                <div style="font-size:14px;font-weight:600;color:#e2e8f0">الحضور</div>
-                <div style="font-size:11px;margin-top:4px">باركود وبحث سريع</div>
-              </div>
+        <div class="show-item">
+          <div class="show-img" style="background:linear-gradient(135deg,#1e293b,#0f172a)">
+            <div class="show-placeholder">
+              <span class="show-emoji">✅</span>
+              <span class="show-label">شاشة الحضور</span>
             </div>
           </div>
-          <div class="showcase-caption">
+          <div class="show-info">
             <h4>شاشة الحضور</h4>
             <p>تسجيل حضور بالباركود أو البحث السريع مع إنشاء امتحانات تلقائي</p>
           </div>
@@ -236,28 +226,28 @@
     </div>
   </section>
 
-  <!-- Download -->
+  <!-- ===== DOWNLOAD ===== -->
   <section class="section" id="download">
     <div class="container">
-      <div class="section-head">
-        <span class="section-badge">تحميل</span>
-        <h2>ابدأ الآن مجاناً</h2>
-        <p>حمّل البرنامج وابدأ في إدارة مركزك التعليمي في دقائق</p>
+      <div class="sec-head">
+        <span class="sec-tag">تحميل</span>
+        <h2 class="sec-title">ابدأ الآن <span class="gradient-text">مجاناً</span></h2>
+        <p class="sec-sub">حمّل البرنامج وابدأ في إدارة مركزك التعليمي في دقائق</p>
       </div>
-      <div class="download-options">
-        <div class="download-card featured">
-          <div class="download-card-badge">الأحدث</div>
+      <div class="download-wrap">
+        <div class="download-card">
+          <div class="download-badge">🌟 الأحدث</div>
           <div class="download-icon">🎓</div>
           <h3>EduCenter Pro</h3>
-          <div class="download-version">الإصدار 1.0.0</div>
+          <div class="download-ver">الإصدار 1.0.0</div>
           <div class="download-specs">
             <span>🪟 وندوز 10/11</span>
             <span>📦 115 MB</span>
             <span>🌐 بدون إنترنت</span>
             <span>🔒 آمن تماماً</span>
           </div>
-          <a href="../release/EduCenter%20Pro%20Setup%201.0.0.exe" class="btn-primary download-btn" download>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <a href="../release/EduCenter%20Pro%20Setup%201.0.0.exe" class="btn btn-primary btn-dl" download>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             تحميل المثبت
           </a>
           <p class="download-note">مجاني بالكامل — بدون تسجيل — تحديثات مستمرة</p>
@@ -266,32 +256,32 @@
     </div>
   </section>
 
-  <!-- Contact -->
+  <!-- ===== CONTACT ===== -->
   <section class="section" id="contact">
     <div class="container">
-      <div class="section-head">
-        <span class="section-badge">اتصل بنا</span>
-        <h2>تواصل مع فريق الدعم</h2>
-        <p>نحن هنا لمساعدتك في أي وقت</p>
+      <div class="sec-head">
+        <span class="sec-tag">اتصل بنا</span>
+        <h2 class="sec-title">تواصل مع <span class="gradient-text">فريق الدعم</span></h2>
+        <p class="sec-sub">نحن هنا لمساعدتك في أي وقت</p>
       </div>
       <div class="contact-grid">
         <a href="tel:01033558125" class="contact-card">
-          <div class="contact-icon">📞</div>
+          <span class="contact-icon">📞</span>
           <h4>اتصال هاتفي</h4>
           <p>01033558125</p>
         </a>
         <a href="mailto:yousof212009@gmail.com" class="contact-card">
-          <div class="contact-icon">📧</div>
+          <span class="contact-icon">📧</span>
           <h4>البريد الإلكتروني</h4>
           <p>yousof212009@gmail.com</p>
         </a>
         <a href="https://github.com/YoussefMohamed-Joo" target="_blank" class="contact-card">
-          <div class="contact-icon">🐙</div>
+          <span class="contact-icon">🐙</span>
           <h4>GitHub</h4>
           <p>@YoussefMohamed-Joo</p>
         </a>
         <a href="https://vercel.com/youssefmohamed-joos-projects" target="_blank" class="contact-card">
-          <div class="contact-icon">▲</div>
+          <span class="contact-icon">▲</span>
           <h4>Vercel</h4>
           <p>مشاريعنا</p>
         </a>
@@ -299,45 +289,40 @@
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ===== FOOTER ===== -->
   <footer>
-    <div class="footer-top">
-      <div class="container">
-        <div class="footer-grid">
-          <div class="footer-col">
-            <div class="footer-logo">
-              <div class="footer-logo-icon">E</div>
-              <span>EduCenter Pro</span>
-            </div>
-            <p style="color:var(--muted);font-size:13px;line-height:1.7">
-              النظام المتكامل لإدارة المراكز التعليمية. طورناه عشان يخدم احتياجاتك.
-            </p>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="footer-logo-mark">E</span>
+            EduCenter <span style="font-weight:300">Pro</span>
           </div>
-          <div class="footer-col">
-            <h4>روابط سريعة</h4>
-            <a href="#features">المميزات</a>
-            <a href="#screenshots">صور</a>
-            <a href="#download">تحميل</a>
-            <a href="#contact">اتصل بنا</a>
-          </div>
-          <div class="footer-col">
-            <h4>التقنيات</h4>
-            <a href="#">Electron + React</a>
-            <a href="#">TypeScript + Vite</a>
-            <a href="#">SQLite + Tailwind</a>
-          </div>
-          <div class="footer-col">
-            <h4>الدعم</h4>
-            <a href="tel:01033558125">📞 01033558125</a>
-            <a href="mailto:yousof212009@gmail.com">📧 yousof212009@gmail.com</a>
-            <a href="https://github.com/YoussefMohamed-Joo/EduCenter-Pro" target="_blank">🐙 GitHub</a>
-          </div>
+          <p>النظام المتكامل لإدارة المراكز التعليمية. طورناه عشان يخدم احتياجاتك.</p>
+        </div>
+        <div class="footer-col">
+          <h5>روابط سريعة</h5>
+          <a href="#features">المميزات</a>
+          <a href="#showcase">معرض الصور</a>
+          <a href="#download">تحميل</a>
+          <a href="#contact">اتصل بنا</a>
+        </div>
+        <div class="footer-col">
+          <h5>التقنيات</h5>
+          <a href="#">Electron + React</a>
+          <a href="#">TypeScript + Vite</a>
+          <a href="#">SQLite + Tailwind</a>
+        </div>
+        <div class="footer-col">
+          <h5>الدعم</h5>
+          <a href="tel:01033558125">📞 01033558125</a>
+          <a href="mailto:yousof212009@gmail.com">📧 البريد الإلكتروني</a>
+          <a href="https://github.com/YoussefMohamed-Joo/EduCenter-Pro" target="_blank">🐙 GitHub</a>
         </div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>جميع الحقوق محفوظة &copy; 2026 EduCenter Pro</p>
-      <p class="credit">برمجة وتطوير م. يوسف محمد</p>
+    <div class="footer-btm">
+      <p>جميع الحقوق محفوظة &copy; 2026 EduCenter Pro — برمجة وتطوير م. يوسف محمد</p>
     </div>
   </footer>
 
