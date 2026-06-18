@@ -1,31 +1,21 @@
 EduCenter Pro — موقع التحميل الرسمي
 =====================================
 
-رابط الموقع (Vercel):
-https://educenter-pro-murex.vercel.app
+رابط الموقع:
+https://educenter-pro-murex.vercel.app/
 
 رابط GitHub:
 https://github.com/YoussefMohamed-Joo/EduCenter-Pro
 
 طريقة التحميل:
-1. افتح: https://educenter-pro-murex.vercel.app
-2. اضغط "تحميل البرنامج"
-3. شغّل EduCenter Pro Setup 1.0.0.exe
-4. سجل: admin / admin123
+1. افتح الرابط أعلاه
+2. اضغط على "تحميل البرنامج"
+3. شغّل ملف التثبيت EduCenter Pro Setup 1.0.0.exe
+4. سجل الدخول: admin / admin123
 
 متطلبات التشغيل:
 - ويندوز 10 أو 11 (64 بت)
-- 4GB RAM
-- 500MB مساحة
+- 4GB RAM (موصى به)
+- 500MB مساحة حرة
 
-=====================================
-لنشر الموقع على Github:
-1. افتح: https://github.com/new
-2. اسم الـ repo: EduCenter-Pro
-3. Public
-4. Create repository
-5. نفّذ في PowerShell:
-   git remote add origin https://github.com/YoussefMohamed-Joo/EduCenter-Pro.git
-   git push -u origin master
-
-إنشاء: 18 يونيو 2026
+تاريخ الإنشاء: 18 يونيو 2026
