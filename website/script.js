@@ -1,21 +1,19 @@
 /* ===== PLATFORM DETECTION ===== */
 (function(){
   const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-  const downloadCards = document.querySelectorAll('.download-card');
-  if (downloadCards.length >= 2) {
-    if (isMac) {
-      downloadCards[0].style.display = 'none';
-    } else {
-      downloadCards[1].style.display = 'none';
-    }
-  }
   const heroBtn = document.querySelector('.hero-actions .btn-primary');
-  if (heroBtn && downloadCards.length >= 2) {
-    const href = isMac
-      ? downloadCards[1].querySelector('a')?.getAttribute('href')
-      : downloadCards[0].querySelector('a')?.getAttribute('href');
-    if (href) heroBtn.setAttribute('href', href);
-    heroBtn.textContent = isMac ? 'تحميل (DMG)' : 'تحميل (EXE)';
+  if (isMac) {
+    if (heroBtn) {
+      heroBtn.setAttribute('href', '#');
+      heroBtn.textContent = 'قريباً 🚧';
+      heroBtn.style.pointerEvents = 'none';
+      heroBtn.style.opacity = '0.6';
+    }
+  } else {
+    if (heroBtn) {
+      heroBtn.setAttribute('href', 'https://github.com/YoussefMohamed-Joo/EduCenter-Pro/releases/download/v1.0.1/EduCenter.Pro.Setup.1.0.1.exe');
+      heroBtn.textContent = 'تحميل مجاني (EXE)';
+    }
   }
 })();
 
