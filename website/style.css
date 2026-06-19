@@ -66,25 +66,24 @@ body{
   pointer-events:none;overflow:hidden;
   user-select:none;-webkit-user-select:none;
   font-family:var(--font);
-  color:var(--primary);
-  opacity:.09;
+  color:rgba(0,0,0,.13);
 }
-.dark .watermark{opacity:.15}
+.dark .watermark{color:rgba(255,255,255,.18)}
 .watermark-wrap{
-  position:absolute;inset:-200% auto auto -200%;
-  width:500%;height:500%;
+  position:absolute;inset:-300% auto auto -300%;
+  width:900%;height:900%;
   transform:rotate(-28deg);
   display:flex;flex-wrap:wrap;align-content:flex-start;
-  gap:30px 60px;
-  padding:20px;
-  font-size:clamp(14px,2.2vw,28px);
+  gap:40px 70px;
+  padding:30px;
+  font-size:clamp(18px,2.8vw,34px);
   font-weight:900;
   white-space:nowrap;
-  line-height:1;
+  line-height:1.2;
 }
 .watermark-wrap span{
   display:inline-block;
-  letter-spacing:2px;
+  letter-spacing:3px;
 }
 
 a{color:inherit;text-decoration:none}
