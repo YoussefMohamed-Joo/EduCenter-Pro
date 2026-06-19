@@ -1,6 +1,6 @@
 {
   "name": "educenter-pro",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "EduCenter Pro - Professional Student Management System",
   "main": "dist-electron/main.js",
   "scripts": {
@@ -8,13 +8,15 @@
     "build": "tsc && vite build && electron-builder",
     "preview": "vite preview",
     "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
-    "electron:build": "vite build && electron-builder"
+    "electron:build": "vite build && electron-builder",
+    "publish": "vite build && electron-builder --publish always"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "electron-store": "^8.2.0",
+    "electron-updater": "^6.8.9",
     "framer-motion": "^11.2.10",
     "jsbarcode": "^3.11.6",
     "lucide-react": "^0.400.0",
@@ -56,17 +58,28 @@
     "files": [
       "dist/**/*",
       "dist-electron/**/*",
-      "node_modules/sql.js/**/*"
+      "node_modules/sql.js/**/*",
+      "node_modules/electron-updater/**/*"
     ],
     "asarUnpack": [
       "node_modules/sql.js/dist/*.wasm"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "publish": ["github"]
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "differentialPackage": true,
+      "createDesktopShortcut": true,
+      "installerIcon": null
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "YoussefMohamed-Joo",
+      "repo": "EduCenter-Pro",
+      "releaseType": "release"
     }
   }
 }

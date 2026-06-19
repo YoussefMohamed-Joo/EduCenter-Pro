@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useGlobalShortcuts } from '@/hooks/useKeyboardShortcuts';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import CommandPalette from '@/components/CommandPalette';
+import UpdateNotification from '@/components/UpdateNotification';
 import Login from '@/modules/dashboard/Login';
 import Dashboard from '@/modules/dashboard/Dashboard';
 import StudentsPage from '@/modules/students/StudentsPage';
@@ -68,6 +69,7 @@ export default function App() {
         }}
       />
       <CommandPalette />
+      <UpdateNotification />
       <AppRoutes />
     </HashRouter>
   );

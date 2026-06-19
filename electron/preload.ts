@@ -1,5 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
+const updateListeners = new Map<string, (...args: any[]) => void>();
+
 contextBridge.exposeInMainWorld('electronAPI', {
   // Window
   minimize: () => ipcRenderer.invoke('window:minimize'),
@@ -132,4 +134,24 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Analytics
   getAttendanceAnalytics: (groupId: number, days?: number) => ipcRenderer.invoke('analytics:attendance', { group_id: groupId, days }),
   getRevenueAnalytics: (months?: number) => ipcRenderer.invoke('analytics:revenue', months),
+
+  // Auto Update
+  checkForUpdates: () => ipcRenderer.invoke('update:check'),
+  checkForUpdatesNow: () => ipcRenderer.invoke('update:checkNow'),
+  downloadUpdate: () => ipcRenderer.invoke('update:download'),
+  installUpdate: () => ipcRenderer.invoke('update:install'),
+
+  onUpdateStatus: (callback: (status: any) => void) => {
+    const listener = (_event: any, status: any) => callback(status);
+    ipcRenderer.on('update:status', listener);
+    updateListeners.set('update:status', listener as any);
+  },
+
+  removeUpdateListener: () => {
+    const listener = updateListeners.get('update:status');
+    if (listener) {
+      ipcRenderer.removeListener('update:status', listener as any);
+      updateListeners.delete('update:status');
+    }
+  },
 });

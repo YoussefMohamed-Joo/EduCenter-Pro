@@ -221,6 +221,13 @@ export interface StudentListResponse {
 
 export interface SearchResult extends Student {}
 
+export interface UpdateStatus {
+  type: 'checking' | 'available' | 'not-available' | 'progress' | 'downloaded' | 'error';
+  info?: any;
+  progress?: { percent: number; bytesPerSecond: number; total: number; transferred: number };
+  error?: string;
+}
+
 declare global {
   interface Window {
     electronAPI: {
@@ -317,6 +324,13 @@ declare global {
       // Analytics
       getAttendanceAnalytics: (groupId: number, days?: number) => Promise<any[]>;
       getRevenueAnalytics: (months?: number) => Promise<any[]>;
+      // Auto Update
+      checkForUpdates: () => Promise<{ success: boolean; updateAvailable?: boolean; error?: string }>;
+      checkForUpdatesNow: () => Promise<{ success: boolean; error?: string }>;
+      downloadUpdate: () => Promise<{ success: boolean; error?: string }>;
+      installUpdate: () => Promise<{ success: boolean }>;
+      onUpdateStatus: (callback: (status: UpdateStatus) => void) => void;
+      removeUpdateListener: () => void;
     };
   }
 }

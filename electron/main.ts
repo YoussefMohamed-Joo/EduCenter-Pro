@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'path';
 import crypto from 'crypto';
 import { initDatabase, getDb, closeDatabase, backupDatabase, restoreDatabase, getStats, logActivity, clearTable } from './database';
+import { initUpdater, registerUpdaterHandlers } from './updater';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -42,6 +43,11 @@ app.whenReady().then(async () => {
   await initDatabase();
   createWindow();
   registerIpcHandlers();
+  registerUpdaterHandlers();
+
+  if (mainWindow) {
+    initUpdater(mainWindow);
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Settings, GraduationCap, Sun, Moon, Volume2, VolumeX, Database, Download, Upload, Plus, X, Edit2, Trash2, BookOpen, ListOrdered, History, Calendar, MessageSquare, Palette, Cloud, Globe } from 'lucide-react';
+import { Settings, GraduationCap, Sun, Moon, Volume2, VolumeX, Database, Download, Upload, Plus, X, Edit2, Trash2, BookOpen, ListOrdered, History, Calendar, MessageSquare, Palette, Cloud, Globe, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAppStore } from '@/store/appStore';
 import type { Grade } from '@/types';
@@ -13,7 +13,9 @@ export default function SettingsPage() {
   const [showGradeModal, setShowGradeModal] = useState(false);
   const [editingGrade, setEditingGrade] = useState<Grade | null>(null);
   const [gradeForm, setGradeForm] = useState({ name: '', price: 0, session_count: 12 });
-  const [activeTab, setActiveTab] = useState<'general' | 'grades' | 'branding'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'grades' | 'branding' | 'updates'>('general');
+  const [updateChecking, setUpdateChecking] = useState(false);
+  const [updateInfo, setUpdateInfo] = useState<string | null>(null);
 
   const quickLinks = [
     { to: '/teachers', icon: BookOpen, label: 'المدرسون', desc: 'إدارة المدرسين والحضور والتقييمات' },
@@ -102,6 +104,9 @@ export default function SettingsPage() {
         </button>
         <button onClick={() => setActiveTab('branding')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'branding' ? 'bg-primary-600 text-white' : 'bg-dark-700 text-dark-300 hover:bg-dark-600'}`}>
           <Palette size={16} className="inline ml-1" /> العلامة التجارية
+        </button>
+        <button onClick={() => setActiveTab('updates')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'updates' ? 'bg-primary-600 text-white' : 'bg-dark-700 text-dark-300 hover:bg-dark-600'}`}>
+          <RefreshCw size={16} className="inline ml-1" /> التحديثات
         </button>
       </div>
 
@@ -201,6 +206,53 @@ export default function SettingsPage() {
       )}
 
       {activeTab === 'branding' && <BrandingSettings />}
+
+      {activeTab === 'updates' && (
+        <div className="card p-6">
+          <h2 className="text-sm font-semibold text-dark-200 mb-4 flex items-center gap-2">
+            <RefreshCw size={16} className="text-primary-400" /> التحديثات التلقائية
+          </h2>
+          <div className="space-y-4">
+            <p className="text-xs text-dark-400 leading-relaxed">
+              البرنامج يتحقق من وجود تحديثات تلقائياً عند بدء التشغيل. عند توفر تحديث جديد، سيتم تحميله في الخلفية
+              ويمكنك تثبيته عند الانتهاء. جميع بياناتك تبقى محفوظة أثناء التحديث.
+            </p>
+            <button
+              onClick={async () => {
+                setUpdateChecking(true);
+                setUpdateInfo(null);
+                try {
+                  const result = await window.electronAPI.checkForUpdates();
+                  if (result.success) {
+                    setUpdateInfo(result.updateAvailable ? 'يوجد تحديث متاح' : 'البرنامج محدث لأحدث إصدار');
+                  } else {
+                    setUpdateInfo('فشل التحقق من التحديثات');
+                  }
+                } catch {
+                  setUpdateInfo('فشل الاتصال بخادم التحديثات');
+                }
+                setUpdateChecking(false);
+              }}
+              disabled={updateChecking}
+              className="btn-primary text-xs py-2 px-4"
+            >
+              <RefreshCw size={14} className={`${updateChecking ? 'animate-spin' : ''}`} />
+              {updateChecking ? 'جارٍ الفحص...' : 'التحقق من وجود تحديثات'}
+            </button>
+            {updateInfo && (
+              <p className="text-sm text-dark-300 bg-dark-700/50 rounded-lg px-4 py-2">{updateInfo}</p>
+            )}
+            <div className="border-t border-dark-700 pt-4 mt-4">
+              <p className="text-xs text-dark-500">
+                الإصدار الحالي: <span className="text-dark-300 font-mono">1.0.1</span>
+              </p>
+              <p className="text-xs text-dark-500 mt-1">
+                آخر إصدار على GitHub: يتم الفحص تلقائياً
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showGradeModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setShowGradeModal(false)}>
