@@ -25,6 +25,7 @@ const adminItems = [
   { to: '/activity-log', icon: History, label: 'سجل النشاطات' },
   { to: '/compensation', icon: Calendar, label: 'تعويض الحصص' },
   { to: '/messages', icon: MessageSquare, label: 'الرسائل' },
+  { to: '/system-monitor', icon: BarChart3, label: 'مراقبة النظام' },
 ];
 
 export default function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => void }) {

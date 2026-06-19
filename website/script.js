@@ -1,3 +1,24 @@
+/* ===== PLATFORM DETECTION ===== */
+(function(){
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const downloadCards = document.querySelectorAll('.download-card');
+  if (downloadCards.length >= 2) {
+    if (isMac) {
+      downloadCards[0].style.display = 'none';
+    } else {
+      downloadCards[1].style.display = 'none';
+    }
+  }
+  const heroBtn = document.querySelector('.hero-actions .btn-primary');
+  if (heroBtn && downloadCards.length >= 2) {
+    const href = isMac
+      ? downloadCards[1].querySelector('a')?.getAttribute('href')
+      : downloadCards[0].querySelector('a')?.getAttribute('href');
+    if (href) heroBtn.setAttribute('href', href);
+    heroBtn.textContent = isMac ? 'تحميل (DMG)' : 'تحميل (EXE)';
+  }
+})();
+
 /* ===== THEME ===== */
 (function(){
   const saved = localStorage.getItem('theme')||'light';

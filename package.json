@@ -15,6 +15,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@sentry/electron": "^7.13.0",
     "electron-store": "^8.2.0",
     "electron-updater": "^6.8.9",
     "framer-motion": "^11.2.10",
@@ -66,14 +67,42 @@
     ],
     "win": {
       "target": "nsis",
-      "publish": ["github"]
+      "publish": [
+        "github"
+      ],
+      "icon": null
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "publish": [
+        "github"
+      ],
+      "category": "public.app-category.education",
+      "icon": null
+    },
+    "dmg": {
+      "title": "EduCenter Pro ${version}",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     },
     "nsis": {
       "oneClick": true,
       "allowToChangeInstallationDirectory": false,
       "differentialPackage": true,
-      "createDesktopShortcut": true,
-      "installerIcon": null
+      "createDesktopShortcut": true
     },
     "publish": {
       "provider": "github",

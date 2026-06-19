@@ -1,52 +1,107 @@
-import { Component } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { Component, type ReactNode, type ErrorInfo } from 'react';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 interface Props {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  children: ReactNode;
+  fallback?: ReactNode;
+  onReset?: () => void;
+  name?: string;
 }
 
 interface State {
   hasError: boolean;
-  error?: Error;
+  error: Error | null;
+  errorInfo: ErrorInfo | null;
+  recoveryAttempts: number;
 }
 
-export default class ErrorBoundary extends Component<Props, State> {
+export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null, errorInfo: null, recoveryAttempts: 0 };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     return { hasError: true, error };
   }
 
-  handleRetry = () => {
-    this.setState({ hasError: false, error: undefined });
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    this.setState({ errorInfo });
+    try {
+      const api = (window as any).electronAPI;
+      if (api?.logActivity) {
+        api.logActivity('ui_error', `[${this.props.name || 'unknown'}] ${error.message}`);
+      }
+    } catch {}
+  }
+
+  private handleRetry = (): void => {
+    const attempts = this.state.recoveryAttempts + 1;
+    if (attempts >= 3) {
+      window.location.reload();
+      return;
+    }
+    this.setState({ hasError: false, error: null, errorInfo: null, recoveryAttempts: attempts });
+    this.props.onReset?.();
   };
 
-  render() {
+  private handleGoHome = (): void => {
+    window.location.hash = '#/';
+    setTimeout(() => this.setState({ hasError: false, error: null, errorInfo: null }), 100);
+  };
+
+  render(): ReactNode {
     if (this.state.hasError) {
-      if (this.props.fallback) return this.props.fallback;
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      const isRepeated = this.state.recoveryAttempts >= 2;
+
       return (
-        <div className="flex items-center justify-center min-h-[300px]">
-          <div className="card p-8 max-w-md text-center space-y-4">
-            <div className="flex justify-center">
-              <div className="p-3 rounded-full bg-red-500/10">
-                <AlertTriangle size={32} className="text-red-400" />
-              </div>
+        <div dir="rtl" className="flex items-center justify-center min-h-[400px] p-8">
+          <div className="text-center max-w-md">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+              <AlertTriangle className="w-8 h-8 text-red-400" />
             </div>
-            <h2 className="text-lg font-bold text-white">حدث خطأ غير متوقع</h2>
-            <p className="text-sm text-dark-400">
-              {this.state.error?.message || 'يرجى المحاولة مرة أخرى'}
+            <h2 className="text-xl font-bold text-white mb-2">
+              {isRepeated ? 'تعذر تحميل هذا القسم' : 'حدث خطأ غير متوقع'}
+            </h2>
+            <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+              {isRepeated
+                ? 'نواجه مشكلة في تحميل هذا القسم. تم تسجيل المشكلة وسيتم حلها قريباً.'
+                : `حدث خطأ في تحميل ${this.props.name || 'هذا القسم'}. يمكنك المحاولة مرة أخرى أو العودة للصفحة الرئيسية.`}
             </p>
-            <button onClick={this.handleRetry} className="btn-primary mx-auto">
-              <RefreshCw size={16} /> إعادة المحاولة
-            </button>
+            {this.state.error?.message && (
+              <div className="mb-4 p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                <p className="text-xs text-slate-500 font-mono text-left" dir="ltr">
+                  {this.state.error.message}
+                </p>
+              </div>
+            )}
+            <div className="flex items-center justify-center gap-3">
+              {!isRepeated && (
+                <button
+                  onClick={this.handleRetry}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-colors text-sm font-medium"
+                >
+                  <RefreshCw className={`w-4 h-4 ${this.state.recoveryAttempts > 0 ? 'animate-spin' : ''}`} />
+                  إعادة المحاولة
+                </button>
+              )}
+              <button
+                onClick={this.handleGoHome}
+                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors text-sm font-medium"
+              >
+                <Home className="w-4 h-4" />
+                الصفحة الرئيسية
+              </button>
+            </div>
           </div>
         </div>
       );
     }
+
     return this.props.children;
   }
 }

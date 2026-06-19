@@ -331,6 +331,33 @@ declare global {
       installUpdate: () => Promise<{ success: boolean }>;
       onUpdateStatus: (callback: (status: UpdateStatus) => void) => void;
       removeUpdateListener: () => void;
+
+      // System Resilience
+      getSystemHealth: () => Promise<{
+        status: 'healthy' | 'degraded' | 'critical';
+        uptime: number;
+        memory: { heapUsed: number; heapTotal: number; percentUsed: number };
+        platform: string;
+        version: string;
+        electron: string;
+        safeMode: boolean;
+        modules: { name: string; healthy: boolean; restartCount: number; disabled: boolean; lastHeartbeatAgo: number }[];
+        recentCrashes: { module: string; timestamp: number }[];
+        featureFlags: { feature: string; enabled: boolean }[];
+      }>;
+      getSystemLogs: (level?: string) => Promise<{ timestamp: string; level: string; module: string; message: string }[]>;
+      getBackupHistory: () => Promise<{ timestamp: string; path: string; size: number; type: string; version: string }[]>;
+      restoreFromBackup: (backupPath: string) => Promise<{ success: boolean }>;
+      createSystemBackup: () => Promise<{ success: boolean; path?: string }>;
+      sendHeartbeat: () => Promise<{ ok: boolean }>;
+      onSafeMode: (callback: (data: { active: boolean; module?: string; message?: string }) => void) => void;
+      removeSafeModeListener: () => void;
+      onFatalError: (callback: (data: { message: string; stack?: string }) => void) => void;
+      removeFatalErrorListener: () => void;
+      onSystemPing: (callback: () => void) => void;
+      removeSystemPingListener: () => void;
+      onRecoveryRestart: (callback: () => void) => void;
+      removeRecoveryRestartListener: () => void;
     };
   }
 }

@@ -1,6 +1,21 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 const updateListeners = new Map<string, (...args: any[]) => void>();
+const systemListeners = new Map<string, (...args: any[]) => void>();
+
+function addSystemListener(channel: string, callback: (...args: any[]) => void): void {
+  const listener = (_event: any, ...args: any[]) => callback(...args);
+  ipcRenderer.on(channel, listener);
+  systemListeners.set(channel, listener as any);
+}
+
+function removeSystemListener(channel: string): void {
+  const listener = systemListeners.get(channel);
+  if (listener) {
+    ipcRenderer.removeListener(channel, listener as any);
+    systemListeners.delete(channel);
+  }
+}
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // Window
@@ -153,5 +168,52 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.removeListener('update:status', listener as any);
       updateListeners.delete('update:status');
     }
+  },
+
+  // === SYSTEM RESILIENCE API ===
+
+  getSystemHealth: () => ipcRenderer.invoke('system:health'),
+
+  getSystemLogs: (level?: string) => ipcRenderer.invoke('system:logs', level),
+
+  getBackupHistory: () => ipcRenderer.invoke('system:backups'),
+
+  restoreFromBackup: (backupPath: string) => ipcRenderer.invoke('system:restoreFromBackup', backupPath),
+
+  createSystemBackup: () => ipcRenderer.invoke('system:createBackup'),
+
+  sendHeartbeat: () => ipcRenderer.invoke('system:heartbeat'),
+
+  // System event listeners
+  onSafeMode: (callback: (data: { active: boolean; module?: string; message?: string }) => void) => {
+    addSystemListener('system:safeMode', callback);
+  },
+
+  removeSafeModeListener: () => {
+    removeSystemListener('system:safeMode');
+  },
+
+  onFatalError: (callback: (data: { message: string; stack?: string }) => void) => {
+    addSystemListener('system:fatalError', callback);
+  },
+
+  removeFatalErrorListener: () => {
+    removeSystemListener('system:fatalError');
+  },
+
+  onSystemPing: (callback: () => void) => {
+    addSystemListener('system:ping', callback);
+  },
+
+  removeSystemPingListener: () => {
+    removeSystemListener('system:ping');
+  },
+
+  onRecoveryRestart: (callback: () => void) => {
+    addSystemListener('recovery:rendererRestart', callback);
+  },
+
+  removeRecoveryRestartListener: () => {
+    removeSystemListener('recovery:rendererRestart');
   },
 });

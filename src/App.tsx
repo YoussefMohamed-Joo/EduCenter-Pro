@@ -2,9 +2,11 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import { useGlobalShortcuts } from '@/hooks/useKeyboardShortcuts';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import CommandPalette from '@/components/CommandPalette';
 import UpdateNotification from '@/components/UpdateNotification';
+import { AlertBanner } from '@/components/AlertBanner';
+import { SystemMonitor } from '@/components/SystemMonitor';
 import Login from '@/modules/dashboard/Login';
 import Dashboard from '@/modules/dashboard/Dashboard';
 import StudentsPage from '@/modules/students/StudentsPage';
@@ -21,6 +23,7 @@ import ActivityLogPage from '@/modules/settings/ActivityLogPage';
 import CompensationPage from '@/modules/settings/CompensationPage';
 import MessagesPage from '@/modules/settings/MessagesPage';
 import AppLayout from '@/components/AppLayout';
+import { useSystemResilience } from './hooks/useSystemResilience';
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode; requireAdmin?: boolean }) {
   const { isAuthenticated, user } = useAuthStore();
@@ -36,20 +39,21 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-        <Route index element={<ErrorBoundary key="dashboard"><Dashboard /></ErrorBoundary>} />
-        <Route path="students" element={<ErrorBoundary key="students"><StudentsPage /></ErrorBoundary>} />
-        <Route path="attendance" element={<ErrorBoundary key="attendance"><AttendancePage /></ErrorBoundary>} />
-        <Route path="exams" element={<ErrorBoundary key="exams"><ExamsPage /></ErrorBoundary>} />
-        <Route path="payments" element={<ErrorBoundary key="payments"><PaymentsPage /></ErrorBoundary>} />
-        <Route path="reports" element={<ErrorBoundary key="reports"><ReportsPage /></ErrorBoundary>} />
-        <Route path="settings" element={<ProtectedRoute requireAdmin><ErrorBoundary key="settings"><SettingsPage /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="staff" element={<ProtectedRoute requireAdmin><ErrorBoundary key="staff"><StaffPage /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="groups" element={<ProtectedRoute requireAdmin><ErrorBoundary key="groups"><GroupsPage /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="teachers" element={<ProtectedRoute requireAdmin><ErrorBoundary key="teachers"><TeachersPage /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="waiting-list" element={<ProtectedRoute requireAdmin><ErrorBoundary key="waiting"><WaitingListPage /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="activity-log" element={<ProtectedRoute requireAdmin><ErrorBoundary key="activity"><ActivityLogPage /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="compensation" element={<ProtectedRoute requireAdmin><ErrorBoundary key="compensation"><CompensationPage /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="messages" element={<ProtectedRoute requireAdmin><ErrorBoundary key="messages"><MessagesPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route index element={<ErrorBoundary name="dashboard"><Dashboard /></ErrorBoundary>} />
+        <Route path="students" element={<ErrorBoundary name="students"><StudentsPage /></ErrorBoundary>} />
+        <Route path="attendance" element={<ErrorBoundary name="attendance"><AttendancePage /></ErrorBoundary>} />
+        <Route path="exams" element={<ErrorBoundary name="exams"><ExamsPage /></ErrorBoundary>} />
+        <Route path="payments" element={<ErrorBoundary name="payments"><PaymentsPage /></ErrorBoundary>} />
+        <Route path="reports" element={<ErrorBoundary name="reports"><ReportsPage /></ErrorBoundary>} />
+        <Route path="settings" element={<ProtectedRoute requireAdmin><ErrorBoundary name="settings"><SettingsPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="staff" element={<ProtectedRoute requireAdmin><ErrorBoundary name="staff"><StaffPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="groups" element={<ProtectedRoute requireAdmin><ErrorBoundary name="groups"><GroupsPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="teachers" element={<ProtectedRoute requireAdmin><ErrorBoundary name="teachers"><TeachersPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="waiting-list" element={<ProtectedRoute requireAdmin><ErrorBoundary name="waiting"><WaitingListPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="activity-log" element={<ProtectedRoute requireAdmin><ErrorBoundary name="activity"><ActivityLogPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="compensation" element={<ProtectedRoute requireAdmin><ErrorBoundary name="compensation"><CompensationPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="messages" element={<ProtectedRoute requireAdmin><ErrorBoundary name="messages"><MessagesPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="system-monitor" element={<ProtectedRoute requireAdmin><ErrorBoundary name="system"><SystemMonitor /></ErrorBoundary></ProtectedRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
@@ -57,6 +61,8 @@ function AppRoutes() {
 }
 
 export default function App() {
+  useSystemResilience();
+
   return (
     <HashRouter>
       <Toaster
@@ -70,6 +76,7 @@ export default function App() {
       />
       <CommandPalette />
       <UpdateNotification />
+      <AlertBanner />
       <AppRoutes />
     </HashRouter>
   );
