@@ -1,17 +1,16 @@
 /* ===== PLATFORM DETECTION ===== */
 (function(){
   const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const isArm = navigator.platform.toUpperCase().indexOf('ARM') >= 0;
   const heroBtn = document.querySelector('.hero-actions .btn-primary');
   if (isMac) {
     if (heroBtn) {
-      heroBtn.setAttribute('href', '#');
-      heroBtn.textContent = 'قريباً 🚧';
-      heroBtn.style.pointerEvents = 'none';
-      heroBtn.style.opacity = '0.6';
+      heroBtn.setAttribute('href', 'https://github.com/YoussefMohamed-Joo/EduCenter-Pro/releases/download/v1.0.2/EduCenter-Pro-1.0.2-arm64.dmg');
+      heroBtn.textContent = 'تحميل مجاني (DMG)';
     }
   } else {
     if (heroBtn) {
-      heroBtn.setAttribute('href', 'https://github.com/YoussefMohamed-Joo/EduCenter-Pro/releases/download/v1.0.1/EduCenter.Pro.Setup.1.0.1.exe');
+      heroBtn.setAttribute('href', 'https://github.com/YoussefMohamed-Joo/EduCenter-Pro/releases/download/v1.0.2/EduCenter-Pro-Setup-1.0.2.exe');
       heroBtn.textContent = 'تحميل مجاني (EXE)';
     }
   }
