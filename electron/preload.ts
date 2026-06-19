@@ -71,6 +71,32 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setSetting: (key: string, value: string) => ipcRenderer.invoke('settings:set', { key, value }),
   getAllSettings: () => ipcRenderer.invoke('settings:getAll'),
 
+  // Payment Config
+  getPaymentConfig: () => ipcRenderer.invoke('payment:config'),
+  savePaymentConfig: (config: any) => ipcRenderer.invoke('payment:saveConfig', config),
+  getStudentTotal: (studentId: number) => ipcRenderer.invoke('payment:studentTotal', studentId),
+
+  // AI
+  askAI: (message: string, context?: string) => ipcRenderer.invoke('ai:ask', { message, context }),
+  getAIConfig: () => ipcRenderer.invoke('ai:config'),
+  saveAIConfig: (config: any) => ipcRenderer.invoke('ai:saveConfig', config),
+
+  // Agent
+  agentParseAndExecute: (text: string) => ipcRenderer.invoke('agent:execute', text),
+  getAgentPredictions: () => ipcRenderer.invoke('agent:predictions'),
+  onAgentAlerts: (callback: (alerts: any[]) => void) => {
+    const listener = (_event: any, alerts: any[]) => callback(alerts);
+    ipcRenderer.on('agent:alerts', listener);
+    systemListeners.set('agent:alerts', listener as any);
+  },
+  removeAgentAlertsListener: () => {
+    const listener = systemListeners.get('agent:alerts');
+    if (listener) {
+      ipcRenderer.removeListener('agent:alerts', listener as any);
+      systemListeners.delete('agent:alerts');
+    }
+  },
+
   // Exams
   getExams: (groupId: number) => ipcRenderer.invoke('exams:list', groupId),
   autoCreateExam: (groupId: number, sessionNumber: number) => ipcRenderer.invoke('exams:autoCreate', { group_id: groupId, session_number: sessionNumber }),

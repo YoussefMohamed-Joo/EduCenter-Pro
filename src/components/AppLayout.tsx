@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import TitleBar from './TitleBar';
 import Sidebar from './Sidebar';
 import ClearDataButton from './ClearDataButton';
+import AISidebar from './AISidebar';
+import AgentPanel from './AgentPanel';
+import VoiceButton from './VoiceButton';
 import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 
@@ -43,6 +46,8 @@ export default function AppLayout() {
   const { sidebarOpen, toggleSidebar, loadSettings, loadGrades, loadGroups } = useAppStore();
   const { user } = useAuthStore();
   const location = useLocation();
+  const [aiOpen, setAiOpen] = useState(false);
+  const [agentOpen, setAgentOpen] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -58,7 +63,7 @@ export default function AppLayout() {
     <div className="h-screen flex flex-col bg-dark-900">
       <TitleBar />
       <div className="flex-1 flex overflow-hidden">
-        <Sidebar open={sidebarOpen} onToggle={toggleSidebar} />
+        <Sidebar open={sidebarOpen} onToggle={toggleSidebar} onAiToggle={() => setAiOpen(!aiOpen)} onAgentToggle={() => setAgentOpen(!agentOpen)} />
         <main className="flex-1 overflow-y-auto p-6 relative">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -85,6 +90,9 @@ export default function AppLayout() {
             </div>
           )}
         </main>
+        <AISidebar open={aiOpen} onClose={() => setAiOpen(false)} />
+        <AgentPanel open={agentOpen} onClose={() => setAgentOpen(false)} />
+        <VoiceButton />
       </div>
     </div>
   );

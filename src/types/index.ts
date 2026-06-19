@@ -58,7 +58,37 @@ export interface Payment {
   amount: number;
   payment_type: string;
   notes: string;
+  for_month: string;
   created_at: string;
+}
+
+export interface PaymentConfig {
+  payment_mode: 'session' | 'month';
+  academic_year: string;
+  ai_api_key: string;
+}
+
+export interface AIMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
+export interface AgentAlert {
+  type: string;
+  message: string;
+  icon: string;
+}
+
+export interface AgentPredictions {
+  forecastedMonthlyRevenue: number;
+  studentGrowth: number;
+  bestDay: string;
+  bestDayCount: number;
+  unpaidStudents: number;
+  totalStudents: number;
+  totalRevenue: number;
+  healthScore: number;
 }
 
 export interface Staff {
@@ -331,6 +361,22 @@ declare global {
       installUpdate: () => Promise<{ success: boolean }>;
       onUpdateStatus: (callback: (status: UpdateStatus) => void) => void;
       removeUpdateListener: () => void;
+
+      // Payment Config
+      getPaymentConfig: () => Promise<PaymentConfig>;
+      savePaymentConfig: (config: Partial<PaymentConfig>) => Promise<any>;
+      getStudentTotal: (studentId: number) => Promise<{ total: number; mode: string; sessions: number; monthly: number }>;
+
+      // AI
+      askAI: (message: string, context?: string) => Promise<string>;
+      getAIConfig: () => Promise<{ apiKey: string; enabled: boolean }>;
+      saveAIConfig: (config: { apiKey: string; enabled: boolean }) => Promise<any>;
+
+      // Agent
+      agentParseAndExecute: (text: string) => Promise<{ success: boolean; result?: string; error?: string; action?: string }>;
+      getAgentPredictions: () => Promise<AgentPredictions>;
+      onAgentAlerts: (callback: (alerts: AgentAlert[]) => void) => void;
+      removeAgentAlertsListener: () => void;
 
       // System Resilience
       getSystemHealth: () => Promise<{

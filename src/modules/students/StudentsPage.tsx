@@ -26,6 +26,7 @@ export default function StudentsPage() {
   const [loading, setLoading] = useState(true);
   const [cardStudent, setCardStudent] = useState<Student | null>(null);
   const [importing, setImporting] = useState(false);
+  const [paymentMode, setPaymentMode] = useState('session');
   const limit = 25;
 
   const [form, setForm] = useState({
@@ -51,6 +52,15 @@ export default function StudentsPage() {
 
   useEffect(() => { loadStudents(); }, [loadStudents]);
   useEffect(() => { loadGrades(); loadGroups(); }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const cfg = await window.electronAPI.getPaymentConfig();
+        setPaymentMode(cfg.payment_mode);
+      } catch {}
+    })();
+  }, []);
 
   useKeyboardShortcuts([
     { key: 'n', ctrl: true, handler: () => { resetForm(); setEditingStudent(null); setShowAddModal(true); } },
@@ -239,7 +249,7 @@ export default function StudentsPage() {
                 <th className="text-right px-4 py-3 text-xs font-medium text-dark-400 uppercase">الهاتف</th>
                 <th className="text-right px-4 py-3 text-xs font-medium text-dark-400 uppercase">الصف</th>
                 <th className="text-right px-4 py-3 text-xs font-medium text-dark-400 uppercase">المجموعة</th>
-                <th className="text-center px-4 py-3 text-xs font-medium text-dark-400 uppercase">الحصص</th>
+                {paymentMode === 'session' && <th className="text-center px-4 py-3 text-xs font-medium text-dark-400 uppercase">الحصص</th>}
                 <th className="text-center px-4 py-3 text-xs font-medium text-dark-400 uppercase">الدفع</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-dark-400 uppercase">إجراءات</th>
               </tr>
@@ -258,9 +268,11 @@ export default function StudentsPage() {
                   <td className="px-4 py-3 text-sm text-dark-400" dir="ltr">{student.phone}</td>
                   <td className="px-4 py-3 text-sm text-dark-300">{student.grade_name || '—'}</td>
                   <td className="px-4 py-3 text-sm text-dark-300">{student.group_name || '—'}</td>
+                  {paymentMode === 'session' && (
                   <td className="px-4 py-3 text-center">
                     <span className="text-sm text-dark-300">{student.sessions_attended}/{student.total_sessions}</span>
                   </td>
+                  )}
                   <td className="px-4 py-3 text-center">
                     <span className={`badge ${getStatusColor(student.payment_status)}`}>{getStatusText(student.payment_status)}</span>
                   </td>
@@ -329,10 +341,12 @@ export default function StudentsPage() {
                     </select>
                   </div>
                 </div>
+                {paymentMode === 'session' && (
                 <div>
-                  <label className="label">عدد الحصص</label>
+                  <label className="label">عدد الحصص المسجل فيها</label>
                   <input type="number" value={form.total_sessions} onChange={(e) => setForm({ ...form, total_sessions: Number(e.target.value) })} className="input-field" min={1} max={100} />
                 </div>
+                )}
                 <div className="flex justify-end gap-3 pt-2">
                   <button onClick={() => setShowAddModal(false)} className="btn-secondary">إلغاء</button>
                   <button onClick={editingStudent ? handleUpdate : handleCreate} className="btn-primary">

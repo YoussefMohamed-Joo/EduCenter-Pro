@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Settings, GraduationCap, Sun, Moon, Volume2, VolumeX, Database, Download, Upload, Plus, X, Edit2, Trash2, BookOpen, ListOrdered, History, Calendar, MessageSquare, Palette, Cloud, Globe, RefreshCw } from 'lucide-react';
+import { Settings, GraduationCap, Sun, Moon, Volume2, VolumeX, Database, Download, Upload, Plus, X, Edit2, Trash2, BookOpen, ListOrdered, History, Calendar, MessageSquare, Palette, Cloud, Globe, RefreshCw, DollarSign, Bot, Key } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAppStore } from '@/store/appStore';
 import type { Grade } from '@/types';
@@ -13,7 +13,11 @@ export default function SettingsPage() {
   const [showGradeModal, setShowGradeModal] = useState(false);
   const [editingGrade, setEditingGrade] = useState<Grade | null>(null);
   const [gradeForm, setGradeForm] = useState({ name: '', price: 0, session_count: 12 });
-  const [activeTab, setActiveTab] = useState<'general' | 'grades' | 'branding' | 'updates'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'grades' | 'branding' | 'updates' | 'payment' | 'ai'>('general');
+  const [paymentMode, setPaymentMode] = useState<'session' | 'month'>('session');
+  const [academicYear, setAcademicYear] = useState('2025-2026');
+  const [aiApiKey, setAiApiKey] = useState('');
+  const [aiEnabled, setAiEnabled] = useState(false);
   const [updateChecking, setUpdateChecking] = useState(false);
   const [updateInfo, setUpdateInfo] = useState<string | null>(null);
 
@@ -26,6 +30,26 @@ export default function SettingsPage() {
   ];
 
   useEffect(() => { loadGrades(); }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const cfg = await window.electronAPI.getPaymentConfig();
+        setPaymentMode(cfg.payment_mode);
+        setAcademicYear(cfg.academic_year);
+      } catch {}
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const cfg = await window.electronAPI.getAIConfig();
+        setAiApiKey(cfg.apiKey);
+        setAiEnabled(cfg.enabled);
+      } catch {}
+    })();
+  }, []);
 
   const handleSaveGrade = async () => {
     if (!gradeForm.name.trim()) { toast.error('الاسم مطلوب'); return; }
@@ -104,6 +128,12 @@ export default function SettingsPage() {
         </button>
         <button onClick={() => setActiveTab('branding')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'branding' ? 'bg-primary-600 text-white' : 'bg-dark-700 text-dark-300 hover:bg-dark-600'}`}>
           <Palette size={16} className="inline ml-1" /> العلامة التجارية
+        </button>
+        <button onClick={() => setActiveTab('payment')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'payment' ? 'bg-primary-600 text-white' : 'bg-dark-700 text-dark-300 hover:bg-dark-600'}`}>
+          <DollarSign size={16} className="inline ml-1" /> نظام الدفع
+        </button>
+        <button onClick={() => setActiveTab('ai')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'ai' ? 'bg-primary-600 text-white' : 'bg-dark-700 text-dark-300 hover:bg-dark-600'}`}>
+          <Bot size={16} className="inline ml-1" /> الذكاء الاصطناعي
         </button>
         <button onClick={() => setActiveTab('updates')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'updates' ? 'bg-primary-600 text-white' : 'bg-dark-700 text-dark-300 hover:bg-dark-600'}`}>
           <RefreshCw size={16} className="inline ml-1" /> التحديثات
@@ -190,7 +220,7 @@ export default function SettingsPage() {
               <div key={grade.id} className="flex items-center justify-between py-2.5 px-4 rounded-lg bg-dark-700/30">
                 <div>
                   <p className="text-sm font-medium text-dark-200">{grade.name}</p>
-                  <p className="text-xs text-dark-400">{grade.price} ج.م • {grade.session_count} حصة</p>
+                  <p className="text-xs text-dark-400">{grade.price} ج.م {paymentMode === 'month' ? '/ شهرياً' : `• ${grade.session_count} حصة`}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => { setEditingGrade(grade); setGradeForm({ name: grade.name, price: grade.price, session_count: grade.session_count }); setShowGradeModal(true); }} className="btn-ghost p-1"><Edit2 size={14} /></button>
@@ -206,6 +236,127 @@ export default function SettingsPage() {
       )}
 
       {activeTab === 'branding' && <BrandingSettings />}
+
+      {activeTab === 'payment' && (
+        <div className="card p-6">
+          <h2 className="text-sm font-semibold text-dark-200 mb-4 flex items-center gap-2">
+            <DollarSign size={16} className="text-primary-400" /> نظام الدفع
+          </h2>
+          <div className="space-y-5">
+            <div>
+              <label className="label">السنة الدراسية</label>
+              <input type="text" value={academicYear} onChange={(e) => setAcademicYear(e.target.value)} className="input-field" placeholder="مثال: 2025-2026" />
+            </div>
+            <div>
+              <label className="label">طريقة الدفع</label>
+              <div className="grid grid-cols-2 gap-3 mt-1">
+                <button
+                  onClick={() => setPaymentMode('session')}
+                  className={`p-4 rounded-xl border text-right transition-all ${
+                    paymentMode === 'session'
+                      ? 'border-primary-500 bg-primary-500/10 text-primary-400'
+                      : 'border-dark-600 bg-dark-700/50 text-dark-300 hover:border-dark-500'
+                  }`}
+                >
+                  <p className="text-sm font-bold">الدفع بالحصص</p>
+                  <p className="text-xs mt-1 opacity-70">سعر الحصة × عدد الحصص للطالب</p>
+                </button>
+                <button
+                  onClick={() => setPaymentMode('month')}
+                  className={`p-4 rounded-xl border text-right transition-all ${
+                    paymentMode === 'month'
+                      ? 'border-primary-500 bg-primary-500/10 text-primary-400'
+                      : 'border-dark-600 bg-dark-700/50 text-dark-300 hover:border-dark-500'
+                  }`}
+                >
+                  <p className="text-sm font-bold">الدفع بالشهر</p>
+                  <p className="text-xs mt-1 opacity-70">اشتراك شهري متكرر</p>
+                </button>
+              </div>
+            </div>
+            <div className="bg-dark-700/30 rounded-lg p-4 text-sm text-dark-300 leading-relaxed">
+              {paymentMode === 'session' ? (
+                <p>في وضع <strong className="text-white">الدفع بالحصص</strong>: سعر الصف = سعر الحصة الواحدة. إجمالي الطالب = سعر الحصة × عدد الحصص المسجل فيها.</p>
+              ) : (
+                <p>في وضع <strong className="text-white">الدفع بالشهر</strong>: سعر الصف = القيمة الشهرية. الطالب يدفع اشتراك شهري متكرر.</p>
+              )}
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={async () => {
+                  try {
+                    await window.electronAPI.savePaymentConfig({ payment_mode: paymentMode, academic_year: academicYear });
+                    toast.success('تم حفظ إعدادات الدفع');
+                  } catch { toast.error('فشل الحفظ'); }
+                }}
+                className="btn-primary"
+              >
+                حفظ الإعدادات
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'ai' && (
+        <div className="card p-6">
+          <h2 className="text-sm font-semibold text-dark-200 mb-4 flex items-center gap-2">
+            <Bot size={16} className="text-primary-400" /> الذكاء الاصطناعي
+          </h2>
+          <div className="space-y-5">
+            <div className="bg-dark-700/30 rounded-lg p-4 text-sm text-dark-300 leading-relaxed">
+              <p>استخدم الذكاء الاصطناعي للحصول على تحليلات ذكية، اقتراحات، وتقارير آلية عن الطلاب والمدفوعات والأداء العام للمركز.</p>
+            </div>
+            <div>
+              <label className="label">مفتاح API (Gemini)</label>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  value={aiApiKey}
+                  onChange={(e) => setAiApiKey(e.target.value)}
+                  className="input-field flex-1 font-mono text-xs"
+                  placeholder="أدخل مفتاح Gemini API"
+                />
+                <button
+                  onClick={() => setAiApiKey('')}
+                  className="btn-secondary"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+              <p className="text-xs text-dark-500 mt-1">المفتاح يُحفظ مشفراً في قاعدة البيانات المحلية ولن يظهر في GitHub.</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-dark-200">تفعيل المساعد الذكي</p>
+                <p className="text-xs text-dark-400">عند التعطيل، يظهر زر AI في الشريط الجانبي لكن لا يعمل</p>
+              </div>
+              <button
+                onClick={() => setAiEnabled(!aiEnabled)}
+                className={`w-12 h-7 rounded-full transition-colors relative ${aiEnabled ? 'bg-primary-600' : 'bg-dark-600'}`}
+              >
+                <motion.div
+                  animate={{ x: aiEnabled ? 22 : 2 }}
+                  className="w-5 h-5 bg-white rounded-full absolute top-1"
+                />
+              </button>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={async () => {
+                  try {
+                    await window.electronAPI.saveAIConfig({ apiKey: aiApiKey, enabled: aiEnabled });
+                    toast.success('تم حفظ إعدادات الذكاء الاصطناعي');
+                  } catch { toast.error('فشل الحفظ'); }
+                }}
+                className="btn-primary"
+              >
+                <Key size={14} /> حفظ الإعدادات
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {activeTab === 'updates' && (
         <div className="card p-6">
@@ -267,13 +418,15 @@ export default function SettingsPage() {
                 <input type="text" value={gradeForm.name} onChange={(e) => setGradeForm({ ...gradeForm, name: e.target.value })} className="input-field" placeholder="مثال: الصف الأول" />
               </div>
               <div>
-                <label className="label">الرسوم (ج.م)</label>
+                <label className="label">{paymentMode === 'month' ? 'القيمة الشهرية (ج.م)' : 'سعر الحصة (ج.م)'}</label>
                 <input type="number" value={gradeForm.price} onChange={(e) => setGradeForm({ ...gradeForm, price: Number(e.target.value) })} className="input-field" min={0} />
               </div>
+              {paymentMode === 'session' && (
               <div>
                 <label className="label">عدد الحصص</label>
                 <input type="number" value={gradeForm.session_count} onChange={(e) => setGradeForm({ ...gradeForm, session_count: Number(e.target.value) })} className="input-field" min={1} max={100} />
               </div>
+              )}
               <div className="flex justify-end gap-3 pt-2">
                 <button onClick={() => setShowGradeModal(false)} className="btn-secondary">إلغاء</button>
                 <button onClick={handleSaveGrade} className="btn-primary">{editingGrade ? 'تحديث' : 'إضافة'}</button>

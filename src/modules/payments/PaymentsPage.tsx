@@ -1,10 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, Search, Plus, X, DollarSign } from 'lucide-react';
+import { Wallet, Search, Plus, X, DollarSign, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { Student, Payment } from '@/types';
 import { getStatusColor, getStatusText, formatCurrency } from '@/lib/utils';
 import { useAppStore } from '@/store/appStore';
+
+const monthNames = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+
+function getMonthOptions() {
+  const options: { label: string; value: string }[] = [];
+  const now = new Date();
+  for (let i = -3; i <= 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    const label = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+    const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    options.push({ label, value });
+  }
+  return options;
+}
 
 export default function PaymentsPage() {
   const { grades } = useAppStore();
@@ -16,6 +30,9 @@ export default function PaymentsPage() {
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [paymentType, setPaymentType] = useState('partial');
   const [paymentNotes, setPaymentNotes] = useState('');
+  const [paymentMonth, setPaymentMonth] = useState('');
+  const [paymentMode, setPaymentMode] = useState('session');
+  const [studentTotal, setStudentTotal] = useState<{ total: number; sessions: number; monthly: number } | null>(null);
 
   const loadUnpaid = useCallback(async () => {
     try {
@@ -25,6 +42,15 @@ export default function PaymentsPage() {
   }, []);
 
   useEffect(() => { loadUnpaid(); }, [loadUnpaid]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const cfg = await window.electronAPI.getPaymentConfig();
+        setPaymentMode(cfg.payment_mode);
+      } catch {}
+    })();
+  }, []);
 
   const loadPayments = async (studentId: number) => {
     try {
@@ -36,6 +62,10 @@ export default function PaymentsPage() {
   const openStudent = async (student: Student) => {
     setSelectedStudent(student);
     await loadPayments(student.id);
+    try {
+      const total = await window.electronAPI.getStudentTotal(student.id);
+      setStudentTotal(total);
+    } catch {}
   };
 
   const handleAddPayment = async () => {
@@ -46,13 +76,19 @@ export default function PaymentsPage() {
         amount: paymentAmount,
         payment_type: paymentType,
         notes: paymentNotes,
+        for_month: (paymentMode === 'month' && paymentMonth) ? paymentMonth : '',
       });
       toast.success('تم تسجيل الدفعة');
       setShowPaymentModal(false);
       setPaymentAmount(0);
       setPaymentNotes('');
+      setPaymentMonth('');
       await loadPayments(selectedStudent.id);
       await loadUnpaid();
+      if (studentTotal) {
+        const total = await window.electronAPI.getStudentTotal(selectedStudent.id);
+        setStudentTotal(total);
+      }
     } catch { toast.error('فشل تسجيل الدفعة'); }
   };
 
@@ -93,8 +129,9 @@ export default function PaymentsPage() {
             </div>
             <div className="grid grid-cols-3 gap-6 mt-6">
               <div className="bg-dark-700/30 rounded-lg p-4 text-center">
-                <p className="text-xs text-dark-400 mb-1">سعر الصف</p>
-                <p className="text-lg font-bold text-white">{formatCurrency(getGradePrice(selectedStudent))}</p>
+                <p className="text-xs text-dark-400 mb-1">{paymentMode === 'month' ? 'القيمة الشهرية' : studentTotal ? `سعر الحصة (${studentTotal.sessions} حصة)` : 'سعر الصف'}</p>
+                <p className="text-lg font-bold text-white">{formatCurrency(studentTotal?.total || getGradePrice(selectedStudent))}</p>
+                {paymentMode === 'month' && studentTotal && <p className="text-[10px] text-dark-500 mt-1">{formatCurrency(studentTotal.monthly)} / شهرياً</p>}
               </div>
               <div className="bg-dark-700/30 rounded-lg p-4 text-center">
                 <p className="text-xs text-dark-400 mb-1">المدفوع</p>
@@ -102,7 +139,7 @@ export default function PaymentsPage() {
               </div>
               <div className="bg-dark-700/30 rounded-lg p-4 text-center">
                 <p className="text-xs text-dark-400 mb-1">المتبقي</p>
-                <p className="text-lg font-bold text-red-400">{formatCurrency(Math.max(0, getGradePrice(selectedStudent) - selectedStudent.amount_paid))}</p>
+                <p className="text-lg font-bold text-red-400">{formatCurrency(Math.max(0, (studentTotal?.total || getGradePrice(selectedStudent)) - selectedStudent.amount_paid))}</p>
               </div>
             </div>
             <div className="mt-4">
@@ -116,13 +153,14 @@ export default function PaymentsPage() {
             <h3 className="text-sm font-semibold text-dark-200 mb-4">سجل المدفوعات</h3>
             {payments.length > 0 ? (
               <div className="space-y-2">
-                {payments.map((p) => (
+                  {payments.map((p) => (
                   <div key={p.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-dark-700/20">
                     <div>
                       <span className="text-sm text-dark-200">{formatCurrency(p.amount)}</span>
                       <span className={`text-xs mr-2 ${p.payment_type === 'full' ? 'text-emerald-400' : 'text-amber-400'}`}>
                         ({p.payment_type === 'full' ? 'كامل' : 'جزئي'})
                       </span>
+                      {p.for_month && <span className="text-xs text-dark-500 mr-2"><Calendar size={10} className="inline ml-1" />{p.for_month}</span>}
                     </div>
                     <div className="text-left">
                       <p className="text-xs text-dark-400">{new Date(p.created_at).toLocaleDateString('ar-EG')}</p>
@@ -202,6 +240,21 @@ export default function PaymentsPage() {
                 <label className="label">المبلغ</label>
                 <input type="number" value={paymentAmount} onChange={(e) => setPaymentAmount(Number(e.target.value))} className="input-field" min={1} />
               </div>
+              {paymentMode === 'month' && (
+              <div>
+                <label className="label">الشهر</label>
+                <select value={paymentMonth} onChange={(e) => {
+                  setPaymentMonth(e.target.value);
+                  const monthlyTotal = studentTotal?.monthly || getGradePrice(selectedStudent);
+                  setPaymentAmount(monthlyTotal);
+                }} className="input-field">
+                  <option value="">اختر الشهر</option>
+                  {getMonthOptions().map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+              )}
               <div>
                 <label className="label">النوع</label>
                 <select value={paymentType} onChange={(e) => setPaymentType(e.target.value)} className="input-field">

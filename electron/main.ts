@@ -8,6 +8,8 @@ import { initGlobalErrorHandler, setupRendererErrorRelay } from './errorHandler'
 import { initRecovery, getRecovery } from './recovery';
 import { initBackupSystem, getBackupSystem } from './backup';
 import { withRetry, withDbRetry } from './retry';
+import { setApiKey, askGemini } from './ai';
+import { initAgent, destroyAgent, parseAndExecute, getPredictions } from './agent';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -76,6 +78,14 @@ app.whenReady().then(async () => {
 
   getBackupSystem().init();
 
+  const { queryOne } = getDb();
+  const savedKey = queryOne("SELECT value FROM settings WHERE key = 'ai_api_key'")?.value || '';
+  if (savedKey) setApiKey(savedKey);
+
+  if (mainWindow) {
+    initAgent(mainWindow);
+  }
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
@@ -85,6 +95,7 @@ app.whenReady().then(async () => {
 
 app.on('window-all-closed', () => {
   closeDatabase();
+  destroyAgent();
   getLogger()?.destroy();
   getBackupSystem()?.destroy();
   getRecovery()?.destroy();
@@ -376,13 +387,17 @@ function registerIpcHandlers(): void {
     return dbCall(() => queryAll('SELECT * FROM payments WHERE student_id = ? ORDER BY created_at DESC', [student_id]), 'payments:list');
   });
 
-  ipcMain.handle('payments:add', (_event, { student_id, amount, payment_type, notes }) => {
+  ipcMain.handle('payments:add', (_event, { student_id, amount, payment_type, notes, for_month }) => {
     return dbCall(() => {
-      execute('INSERT INTO payments (student_id, amount, payment_type, notes) VALUES (?, ?, ?, ?)', [student_id, amount, payment_type || 'partial', notes || '']);
-      const student = queryOne('SELECT amount_paid, grade_id FROM students WHERE id = ?', [student_id]);
+      execute('INSERT INTO payments (student_id, amount, payment_type, notes, for_month) VALUES (?, ?, ?, ?, ?)', [student_id, amount, payment_type || 'partial', notes || '', for_month || '']);
+      const student = queryOne('SELECT amount_paid, grade_id, total_sessions FROM students WHERE id = ?', [student_id]);
       const newAmountPaid = (student?.amount_paid || 0) + amount;
+      const modeRow = queryOne("SELECT value FROM settings WHERE key = 'payment_mode'");
+      const mode = modeRow?.value || 'session';
       const grade = queryOne('SELECT price FROM grades WHERE id = ?', [student?.grade_id]);
-      const fullPrice = grade?.price || 0;
+      const price = grade?.price || 0;
+      let fullPrice = price;
+      if (mode === 'session') fullPrice = price * (student?.total_sessions || 12);
       const paymentStatus = newAmountPaid >= fullPrice ? 'paid' : 'partial';
       execute('UPDATE students SET amount_paid = ?, payment_status = ? WHERE id = ?', [newAmountPaid, paymentStatus, student_id]);
       logActivity('payment_add', `إضافة دفعة للطالب`);
@@ -455,6 +470,65 @@ function registerIpcHandlers(): void {
       rows.forEach((r: any) => { settings[r.key] = r.value; });
       return settings;
     }, 'settings:getAll');
+  });
+
+  // Payment Config
+  ipcMain.handle('payment:config', () => {
+    return dbCall(() => {
+      const mode = queryOne("SELECT value FROM settings WHERE key = 'payment_mode'")?.value || 'session';
+      const year = queryOne("SELECT value FROM settings WHERE key = 'academic_year'")?.value || '2025-2026';
+      const key = queryOne("SELECT value FROM settings WHERE key = 'ai_api_key'")?.value || '';
+      return { payment_mode: mode, academic_year: year, ai_api_key: key };
+    }, 'payment:config');
+  });
+
+  ipcMain.handle('payment:saveConfig', (_event, config: any) => {
+    return dbCall(() => {
+      if (config.payment_mode) execute("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('payment_mode', ?, CURRENT_TIMESTAMP)", [config.payment_mode]);
+      if (config.academic_year) execute("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('academic_year', ?, CURRENT_TIMESTAMP)", [config.academic_year]);
+      save();
+      logActivity('payment_config', 'تحديث إعدادات الدفع');
+      return { success: true };
+    }, 'payment:saveConfig');
+  });
+
+  ipcMain.handle('payment:studentTotal', (_event, studentId: number) => {
+    return dbCall(() => {
+      const student = queryOne('SELECT grade_id, total_sessions FROM students WHERE id = ?', [studentId]);
+      if (!student) return { total: 0, mode: 'session', sessions: 0, monthly: 0 };
+      const mode = queryOne("SELECT value FROM settings WHERE key = 'payment_mode'")?.value || 'session';
+      const grade = queryOne('SELECT price FROM grades WHERE id = ?', [student.grade_id]);
+      const price = grade?.price || 0;
+      const sessions = student.total_sessions || 12;
+      const total = mode === 'session' ? price * sessions : price;
+      return { total, mode, sessions, monthly: mode === 'month' ? price : 0 };
+    }, 'payment:studentTotal');
+  });
+
+  // AI
+  ipcMain.handle('ai:config', () => {
+    return dbCall(() => {
+      const apiKey = queryOne("SELECT value FROM settings WHERE key = 'ai_api_key'")?.value || '';
+      return { apiKey, enabled: !!apiKey };
+    }, 'ai:config');
+  });
+
+  ipcMain.handle('ai:saveConfig', (_event, config: { apiKey: string; enabled: boolean }) => {
+    return dbCall(() => {
+      execute("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('ai_api_key', ?, CURRENT_TIMESTAMP)", [config.apiKey || '']);
+      setApiKey(config.apiKey || '');
+      save();
+      return { success: true };
+    }, 'ai:saveConfig');
+  });
+
+  ipcMain.handle('ai:ask', async (_event, { message, context }: { message: string; context?: string }) => {
+    try {
+      const result = await askGemini(message, context);
+      return result;
+    } catch (err: any) {
+      return `❌ حدث خطأ: ${err.message}`;
+    }
   });
 
   // Exams
@@ -548,7 +622,13 @@ function registerIpcHandlers(): void {
       `SELECT s.*, g.name as grade_name, gr.name as group_name, g.price
        FROM students s LEFT JOIN grades g ON s.grade_id = g.id LEFT JOIN groups_tbl gr ON s.group_id = gr.id
        WHERE s.payment_status IN ('unpaid','partial') AND s.is_active = 1 ORDER BY s.payment_status, s.full_name LIMIT 100`
-    ), 'reports:unpaidStudents');
+    ).map((row: any) => {
+      const modeRow = queryOne("SELECT value FROM settings WHERE key = 'payment_mode'");
+      const mode = modeRow?.value || 'session';
+      if (mode === 'session') row.total_price = (row.price || 0) * (row.total_sessions || 12);
+      else row.total_price = row.price || 0;
+      return row;
+    }), 'reports:unpaidStudents');
   });
 
   // Backup / Restore
@@ -928,4 +1008,21 @@ function registerIpcHandlers(): void {
 
   // Dashboard
   ipcMain.handle('dashboard:stats', () => dbCall(() => getStats(), 'dashboard:stats'));
+
+  // Agent
+  ipcMain.handle('agent:execute', async (_event, text: string) => {
+    try {
+      return await parseAndExecute(text);
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
+  });
+
+  ipcMain.handle('agent:predictions', () => {
+    try {
+      return getPredictions();
+    } catch {
+      return { forecastedMonthlyRevenue: 0, studentGrowth: 0, bestDay: '—', bestDayCount: 0, unpaidStudents: 0, totalStudents: 0, totalRevenue: 0, healthScore: 100 };
+    }
+  });
 }

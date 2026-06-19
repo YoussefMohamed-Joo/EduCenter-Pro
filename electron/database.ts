@@ -120,10 +120,12 @@ function createTables(): void {
       amount REAL NOT NULL,
       payment_type TEXT NOT NULL DEFAULT 'partial',
       notes TEXT DEFAULT '',
+      for_month TEXT DEFAULT '',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
     )
   `);
+  try { db.run("ALTER TABLE payments ADD COLUMN for_month TEXT DEFAULT ''"); } catch {}
   db.run(`
     CREATE TABLE IF NOT EXISTS staff (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -328,6 +330,9 @@ function seedInitialData(): void {
     db.run("INSERT INTO staff (username, password, full_name, role, permissions) VALUES (?, ?, ?, ?, ?)", ['admin', 'admin123', 'System Admin', 'admin', 'full_access']);
     db.run("INSERT INTO settings (key, value) VALUES (?, ?)", ['theme', 'dark']);
     db.run("INSERT INTO settings (key, value) VALUES (?, ?)", ['sound_enabled', 'true']);
+    db.run("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)", ['payment_mode', 'session']);
+    db.run("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)", ['academic_year', '2025-2026']);
+    db.run("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)", ['ai_api_key', '']);
     db.run("INSERT INTO grades (name, price, session_count) VALUES (?, ?, ?)", ['الصف الأول', 250, 12]);
     db.run("INSERT INTO grades (name, price, session_count) VALUES (?, ?, ?)", ['الصف الثاني', 350, 12]);
     db.run("INSERT INTO grades (name, price, session_count) VALUES (?, ?, ?)", ['الصف الثالث', 400, 16]);

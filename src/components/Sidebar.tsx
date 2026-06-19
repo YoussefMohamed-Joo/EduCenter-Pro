@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, ClipboardCheck, Wallet,
   BarChart3, Settings, LogOut, UserCog, Layers, GraduationCap, ChevronRight,
-  BookOpen, ListOrdered, History, Calendar, MessageSquare,
+  BookOpen, ListOrdered, History, Calendar, MessageSquare, Bot, Brain,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
@@ -28,7 +28,7 @@ const adminItems = [
   { to: '/system-monitor', icon: BarChart3, label: 'مراقبة النظام' },
 ];
 
-export default function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+export default function Sidebar({ open, onToggle, onAiToggle, onAgentToggle }: { open: boolean; onToggle: () => void; onAiToggle?: () => void; onAgentToggle?: () => void }) {
   const { user, logout } = useAuthStore();
 
   return (
@@ -87,7 +87,21 @@ export default function Sidebar({ open, onToggle }: { open: boolean; onToggle: (
           )}
         </nav>
 
-        <div className="p-2 border-t border-dark-700">
+        <div className="p-2 border-t border-dark-700 space-y-1">
+          <button
+            onClick={onAgentToggle}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full text-dark-400 hover:text-violet-400 hover:bg-violet-500/10 transition-all"
+          >
+            <Brain size={18} className="shrink-0" />
+            {open && <span className="text-sm font-medium">الوكيل الذكي</span>}
+          </button>
+          <button
+            onClick={onAiToggle}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full text-dark-400 hover:text-primary-400 hover:bg-primary-500/10 transition-all"
+          >
+            <Bot size={18} className="shrink-0" />
+            {open && <span className="text-sm font-medium">المساعد الذكي</span>}
+          </button>
           <button
             onClick={logout}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full text-dark-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
