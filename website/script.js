@@ -3,32 +3,10 @@
   const el = document.getElementById('watermark');
   if(!el)return;
   const txt = 'برمجة وتطوير مهندس يوسف محمد 01033448125';
-  const wrap = document.createElement('div');
-  wrap.className = 'watermark-wrap';
-  const cols = Math.ceil(window.innerWidth / 300) + 4;
-  const rows = Math.ceil(window.innerHeight / 80) + 4;
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<cols;c++){
-      const s = document.createElement('span');
-      s.textContent = txt;
-      wrap.appendChild(s);
-    }
-  }
-  el.appendChild(wrap);
-  const ro = new ResizeObserver(()=>{
-    const nc = Math.ceil(window.innerWidth / 300) + 4;
-    const nr = Math.ceil(window.innerHeight / 80) + 4;
-    const need = nc * nr;
-    const have = wrap.children.length;
-    if(need > have){
-      for(let i=have;i<need;i++){
-        const s = document.createElement('span');
-        s.textContent = txt;
-        wrap.appendChild(s);
-      }
-    }
-  });
-  ro.observe(document.documentElement);
+  const span = document.createElement('span');
+  span.className = 'watermark-txt';
+  span.textContent = txt;
+  el.appendChild(span);
 })();
 
 /* ===== PLATFORM DETECTION ===== */
